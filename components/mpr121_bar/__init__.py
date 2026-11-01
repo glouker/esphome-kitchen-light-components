@@ -12,6 +12,7 @@ MULTI_CONF = True
 mpr121_bar_ns = cg.esphome_ns.namespace("mpr121_bar")
 MPR121Bar = mpr121_bar_ns.class_("MPR121Bar", cg.Component, i2c.I2CDevice)
 TapTrigger = mpr121_bar_ns.class_("TapTrigger", automation.Trigger.template())
+LongPressTrigger = mpr121_bar_ns.class_("LongPressTrigger", automation.Trigger.template())
 Param = mpr121_bar_ns.enum("Param")
 
 CONF_MPR121_BAR_ID = "mpr121_bar_id"
@@ -21,6 +22,7 @@ CONF_CONFIRM_SAMPLES = "confirm_samples"
 CONF_MAX_TAP_DURATION = "max_tap_duration"
 CONF_LATCH_TIMEOUT = "latch_timeout"
 CONF_ON_TAP = "on_tap"
+CONF_ON_LONG_PRESS = "on_long_press"
 
 CONFIG_SCHEMA = (
     cv.Schema(
@@ -44,6 +46,9 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_ON_TAP): automation.validate_automation(
                 {cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(TapTrigger)}
             ),
+            cv.Optional(CONF_ON_LONG_PRESS): automation.validate_automation(
+                {cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(LongPressTrigger)}
+            ),
         }
     )
     .extend(cv.COMPONENT_SCHEMA)
@@ -66,6 +71,7 @@ async def to_code(config):
         var.set_param(Param.PARAM_MAX_TAP, config[CONF_MAX_TAP_DURATION].total_milliseconds)
     )
 
-    for conf in config.get(CONF_ON_TAP, []):
-        trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
-        await automation.build_automation(trigger, [], conf)
+    for key in (CONF_ON_TAP, CONF_ON_LONG_PRESS):
+        for conf in config.get(key, []):
+            trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
+            await automation.build_automation(trigger, [], conf)

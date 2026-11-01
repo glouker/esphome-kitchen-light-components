@@ -134,6 +134,7 @@ void MPR121Bar::loop() {
         if (++this->confirm_count_ >= this->confirm_samples_) {
           this->touch_start_ = now;
           this->max_delta_ = abs_delta;
+          this->long_press_fired_ = false;
           this->state_ = STATE_TOUCHED;
           this->set_touched_(true);
         }
@@ -145,9 +146,16 @@ void MPR121Bar::loop() {
     case STATE_TOUCHED:
       if (abs_delta > this->max_delta_)
         this->max_delta_ = abs_delta;
+      if (!this->long_press_fired_ && abs_delta >= release && now - this->touch_start_ >= this->max_tap_) {
+        // Appui long : déclenché pendant le contact, sans attendre le relâchement
+        this->long_press_fired_ = true;
+        this->last_tap_ = now;
+        ESP_LOGD(TAG, "Appui long");
+        this->long_press_callback_.call();
+      }
       if (abs_delta < release) {
         const uint32_t duration = now - this->touch_start_;
-        if (duration <= this->max_tap_ && now - this->last_tap_ > this->cooldown_) {
+        if (!this->long_press_fired_ && duration <= this->max_tap_ && now - this->last_tap_ > this->cooldown_) {
           this->last_tap_ = now;
           ESP_LOGD(TAG, "Tap ! pic=%d durée=%ums", this->max_delta_, (unsigned) duration);
           this->tap_callback_.call();
