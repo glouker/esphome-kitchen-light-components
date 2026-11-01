@@ -46,6 +46,8 @@ from . import (
 )
 
 DEPENDENCIES = ["esp32"]
+# controls.h inclut number/select/switch : à charger même si le YAML ne les utilise pas
+AUTO_LOAD = ["number", "select", "switch"]
 
 TimerFinishedTrigger = spatial_light_ns.class_(
     "TimerFinishedTrigger", automation.Trigger.template()
