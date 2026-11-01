@@ -11,9 +11,13 @@ from esphome.const import (
 
 from . import (
     CONF_FADE_WIDTH,
+    CONF_NIGHT_BRIGHTNESS,
+    CONF_NIGHT_WIDTH,
     CONF_OFF_DURATION,
     CONF_ON_DURATION,
     CONF_TRANSITION,
+    CONF_ZONE_END,
+    CONF_ZONE_START,
     Param,
     spatial_light_ns,
 )
@@ -30,6 +34,10 @@ NUMBERS = {
     CONF_OFF_DURATION: (Param.PARAM_OFF_DURATION, 0, 10000, 50, UNIT_MILLISECOND, "mdi:timer-stop-outline"),
     CONF_TRANSITION: (Param.PARAM_TRANSITION, 0, 5000, 50, UNIT_MILLISECOND, "mdi:transition"),
     CONF_FADE_WIDTH: (Param.PARAM_FADE_WIDTH, 1, 100, 1, UNIT_PERCENT, "mdi:gradient-horizontal"),
+    CONF_ZONE_START: (Param.PARAM_ZONE_START, 0, 99, 1, UNIT_PERCENT, "mdi:ray-start"),
+    CONF_ZONE_END: (Param.PARAM_ZONE_END, 1, 100, 1, UNIT_PERCENT, "mdi:ray-end"),
+    CONF_NIGHT_BRIGHTNESS: (Param.PARAM_NIGHT_BRIGHTNESS, 1, 50, 1, UNIT_PERCENT, "mdi:weather-night"),
+    CONF_NIGHT_WIDTH: (Param.PARAM_NIGHT_WIDTH, 5, 100, 5, UNIT_PERCENT, "mdi:arrow-expand-horizontal"),
 }
 
 

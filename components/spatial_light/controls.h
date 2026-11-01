@@ -4,6 +4,7 @@
 #include "esphome/core/preferences.h"
 #include "esphome/components/number/number.h"
 #include "esphome/components/select/select.h"
+#include "esphome/components/switch/switch.h"
 #include "spatial_light.h"
 
 namespace esphome::spatial_light {
@@ -64,6 +65,25 @@ class SpatialLightSelect : public select::Select, public Component {
   SpatialLightOutput *parent_{nullptr};
   bool on_{true};
   ESPPreferenceObject pref_;
+};
+
+// Interrupteur Home Assistant de la veilleuse.
+class SpatialLightNightSwitch : public switch_::Switch, public Component {
+ public:
+  void set_parent(SpatialLightOutput *parent) { this->parent_ = parent; }
+  float get_setup_priority() const override { return setup_priority::HARDWARE - 1.0f; }
+
+  void setup() override {
+    this->parent_->add_on_night_light_callback([this](bool on) { this->publish_state(on); });
+    const bool initial = this->get_initial_state_with_restore_mode().value_or(false);
+    this->parent_->set_night_light(initial);
+    this->publish_state(this->parent_->is_night_light());
+  }
+
+ protected:
+  void write_state(bool state) override { this->parent_->set_night_light(state); }
+
+  SpatialLightOutput *parent_{nullptr};
 };
 
 }  // namespace esphome::spatial_light

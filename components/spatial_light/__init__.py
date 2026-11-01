@@ -2,7 +2,7 @@ import esphome.codegen as cg
 from esphome.components import light
 
 CODEOWNERS = ["@glouker"]
-AUTO_LOAD = ["number", "select"]
+AUTO_LOAD = ["number", "select", "switch"]
 
 spatial_light_ns = cg.esphome_ns.namespace("spatial_light")
 SpatialLightOutput = spatial_light_ns.class_(
@@ -18,6 +18,13 @@ PATTERNS = {
     "fade": Pattern.PATTERN_FADE,
     "random": Pattern.PATTERN_RANDOM,
     "instant": Pattern.PATTERN_INSTANT,
+    "blocks": Pattern.PATTERN_BLOCKS,
+    "rain": Pattern.PATTERN_RAIN,
+    "comet": Pattern.PATTERN_COMET,
+    "double_comet": Pattern.PATTERN_DOUBLE_COMET,
+    "elastic": Pattern.PATTERN_ELASTIC,
+    "sun": Pattern.PATTERN_SUN,
+    "neon": Pattern.PATTERN_NEON,
 }
 # Libellés affichés dans Home Assistant (même ordre que l'enum C++)
 PATTERN_LABELS = [
@@ -28,6 +35,13 @@ PATTERN_LABELS = [
     "Fondu global",
     "Aléatoire",
     "Instantané",
+    "Blocs",
+    "Pluie",
+    "Comète",
+    "Double comète",
+    "Vague élastique",
+    "Soleil (lever / coucher)",
+    "Néon",
 ]
 
 Param = spatial_light_ns.enum("Param")
@@ -41,6 +55,14 @@ CONF_ON_DURATION = "on_duration"
 CONF_OFF_DURATION = "off_duration"
 CONF_TRANSITION = "transition"
 CONF_FADE_WIDTH = "fade_width"
+CONF_REFRESH_INTERVAL = "refresh_interval"
+CONF_ZONE_START = "zone_start"
+CONF_ZONE_END = "zone_end"
+CONF_NIGHT_BRIGHTNESS = "night_brightness"
+CONF_NIGHT_WIDTH = "night_width"
+CONF_NIGHT_LIGHT = "night_light"
+CONF_TIMER_BRIGHTNESS = "timer_brightness"
+CONF_ON_TIMER_FINISHED = "on_timer_finished"
 CONF_AMBER_TEMPERATURE = "amber_temperature"
 CONF_WARM_WHITE_TEMPERATURE = "warm_white_temperature"
 CONF_COLD_WHITE_TEMPERATURE = "cold_white_temperature"

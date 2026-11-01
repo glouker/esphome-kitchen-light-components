@@ -15,7 +15,7 @@ enum Param : uint8_t {
   PARAM_HYSTERESIS,     // % du seuil sous lequel le contact est considéré relâché
   PARAM_COOLDOWN,       // ms minimum entre deux taps
   PARAM_CONFIRM_SAMPLES,  // nb d'échantillons consécutifs au-dessus du seuil
-  PARAM_MAX_TAP,        // ms : un contact plus long n'est pas un tap
+  PARAM_MAX_TAP,        // ms : au-delà, le contact devient un appui long
 };
 
 /// Détection de tap sur une barre métallique reliée à une électrode MPR121.
@@ -39,6 +39,9 @@ class MPR121Bar : public Component, public i2c::I2CDevice {
   template<typename F> void add_on_tap_callback(F &&callback) {
     this->tap_callback_.add(std::forward<F>(callback));
   }
+  template<typename F> void add_on_long_press_callback(F &&callback) {
+    this->long_press_callback_.add(std::forward<F>(callback));
+  }
 
  protected:
   enum State : uint8_t { STATE_IDLE, STATE_WAIT_CONFIRM, STATE_TOUCHED, STATE_COOLDOWN };
@@ -59,6 +62,7 @@ class MPR121Bar : public Component, public i2c::I2CDevice {
   State state_{STATE_IDLE};
   uint32_t baseline_scaled_{0};
   uint8_t confirm_count_{0};
+  bool long_press_fired_{false};
   uint8_t i2c_errors_{0};
   int max_delta_{0};
   int last_delta_{0};
@@ -71,12 +75,20 @@ class MPR121Bar : public Component, public i2c::I2CDevice {
   sensor::Sensor *delta_sensor_{nullptr};
   binary_sensor::BinarySensor *touched_sensor_{nullptr};
   CallbackManager<void()> tap_callback_;
+  CallbackManager<void()> long_press_callback_;
 };
 
 class TapTrigger : public Trigger<> {
  public:
   explicit TapTrigger(MPR121Bar *parent) {
     parent->add_on_tap_callback([this]() { this->trigger(); });
+  }
+};
+
+class LongPressTrigger : public Trigger<> {
+ public:
+  explicit LongPressTrigger(MPR121Bar *parent) {
+    parent->add_on_long_press_callback([this]() { this->trigger(); });
   }
 };
 
